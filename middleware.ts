@@ -1,19 +1,16 @@
 import "dotenv/config"; // To read CLERK_SECRET_KEY and CLERK_PUBLISHABLE_KEY
-
-import {
-  clerkClient,
-  ClerkExpressRequireAuth,
-  ClerkExpressWithAuth,
-  LooseAuthProp,
-  WithAuthProp,
-} from "@clerk/clerk-sdk-node";
-import express, { Application, NextFunction, Request, Response } from "express";
+import { clerkClient, LooseAuthProp } from "@clerk/clerk-sdk-node";
+import { NextFunction, Request, Response } from "express";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-const optionalUser = async (req, res: Response, next: NextFunction) => {
-  const userId = req.auth.userId;
+const optionalUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = (req as Request & LooseAuthProp).auth?.userId;
   if (!userId) {
     return next(new Error("User ID is null"));
   }
